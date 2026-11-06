@@ -17,8 +17,8 @@ object SettingsBackupCodec {
      * The settings of the main file that travel, by name. That file also holds the iPhones' pairing keys
      * (`pairing.<id>`), lockdown records, the authentication target and the car's hotspot name and
      * passphrase. An imported file must never set those: a pairing key from someone else's file would make
-     * DiPlay trust their device. So a key travels only once it is listed here; car-specific values (the
-     * detected screen size, the car's hotspot) and consents (sharing the map with other apps) stay out too.
+     * DiPlay trust their device. So a key travels only once it is listed here; device-specific values (the
+     * detected screen size, the saved hotspot) and consents (sharing the map with other apps) stay out too.
      */
     private val AIRPLAY_KEYS = setOf(
         "display_scale_tenths", "ui_scale_percent", "hevc_enabled", "hevc_software_decoder",
@@ -34,31 +34,30 @@ object SettingsBackupCodec {
         "speech_without_8_16_khz", "car_bluetooth_audio", "call_echo_cancellation", "call_voice_filter",
         "call_speakerphone",
         "smooth_video", "direct_video_output", "low_latency_decoder", "mtk_decoder_tuning", "fps_counter",
-        "adb_cluster_activity_enabled", "platform21_cluster_enabled", "center_map_overlay", "center_map_auto_hide",
-        "center_map_follows_dashboard", "settings_gesture_fingers", "display_width_physical_mm",
+        "map_stream_enabled", "center_map_overlay", "center_map_auto_hide",
+        "settings_gesture_fingers", "display_width_physical_mm",
         "display_physical_size_basis", "right_hand_drive", "hide_top_bar", "hide_bottom_bar",
         "temporary_system_bars",
         "harman_fullscreen", "carplay_same_task", "safe_area_draw_outside", "main_display_disable_safe_area",
         "black_corner_radius_dp",
-        "adapt_pip_resolution", "auto_start_on_boot", "bt_suspend_during_carplay", "hide_byd_call_popup",
+        "adapt_pip_resolution", "auto_start_on_boot", "bt_suspend_during_carplay",
         "launcher_bubble", "launcher_bubble_size",
         "bt_suspend_delay_seconds", "location_reporting_enabled", "external_controller", "usb_charging_current",
     )
 
     /** Families of layout settings with many keys and nothing sensitive in them. */
-    private val AIRPLAY_PREFIXES = listOf("cluster_", "carplay_night_")
+    private val AIRPLAY_PREFIXES = listOf("carplay_night_")
     private val DIPLAY_KEYS = setOf(
         "auto_connect",
         "connect_on_phone_bluetooth",
         "default_connection_mode",
         "settings_force_full_layout",
         "app_appearance_button",
-        "byd_vehicle_advanced",
         "picture_controls",
         "settings_gesture_fingers",
     )
     private val PICTURE_KEYS = CarPlayPicture.keys.toSet()
-    // The driver's choices only. "ignore_off_report" records what one car's firmware reports, so it stays out.
+    // The owner's choices only. "ignore_off_report" records what one firmware reports, so it stays out.
     private val CAR_HOTSPOT_KEYS = setOf("auto_enable", "config_write")
     private val FILES = mapOf(
         "xcertplay_airplay" to Policy.Allow(AIRPLAY_KEYS, AIRPLAY_PREFIXES),

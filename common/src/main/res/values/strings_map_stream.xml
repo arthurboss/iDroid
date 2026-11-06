@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">CarPlay map stream</string>
+    <string name="settings_map_stream_description">Ask the iPhone for its map screen as well, so the floating map card, the launcher widget and other apps can show it. Applies at the next connection.</string>
+    <string name="setup_connection_changeable_later">You can change this later in Settings → Connection.</string>
+</resources>

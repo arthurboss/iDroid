@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">Потік карти CarPlay</string>
+    <string name="settings_map_stream_description">Запитувати в iPhone також екран із картою, щоб її могли показувати плаваюча картка, віджет лончера та інші додатки. Застосується при наступному з’єднанні.</string>
+    <string name="setup_connection_changeable_later">Це можна змінити потім у Налаштуваннях → З’єднання.</string>
+</resources>

@@ -2,8 +2,6 @@ package com.shilapi.xcertplay
 
 import android.content.Context
 import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageInfo
 import android.os.Looper
 import android.os.ResultReceiver
 import android.provider.Settings
@@ -102,7 +100,7 @@ class HomeHotspotAccessTest {
         val shown = texts(home)
         assertTrue(shown.toString(), home.getString(R.string.settings_write_settings_missing) in shown)
         assertTrue(shown.toString(), home.getString(R.string.settings_write_settings_allow) in shown)
-        // The ADB sentence and the car settings button belong to BYD units.
+        // The hotspot is started through Android's own access, so the ADB route never appears.
         assertFalse(shown.toString(), home.getString(R.string.hotspot_control_missing) in shown)
         assertFalse(shown.toString(), home.getString(R.string.open_car_hotspot_settings) in shown)
 
@@ -112,21 +110,6 @@ class HomeHotspotAccessTest {
         assertEquals("package:${home.packageName}", opened.dataString)
     }
 
-    @Test fun onABydUnitHomeKeepsTheAdbRoute() {
-        shadowOf(context.packageManager).installPackage(PackageInfo().apply {
-            packageName = "com.byd.carsettings"
-            applicationInfo = ApplicationInfo().apply {
-                packageName = "com.byd.carsettings"
-                flags = ApplicationInfo.FLAG_SYSTEM
-            }
-        })
-        val home = openHome().get()
-        awaitResult(home, CarHotspotTethering.Result.PERMISSION_REQUIRED)
-        val shown = texts(home)
-        assertTrue(shown.toString(), home.getString(R.string.hotspot_control_missing) in shown)
-        assertTrue(shown.toString(), home.getString(R.string.open_car_hotspot_settings) in shown)
-        assertFalse(shown.toString(), home.getString(R.string.settings_write_settings_allow) in shown)
-    }
 
     @Test fun onceTheAccessIsAllowedTheHotspotIsStartedOnReturn() {
         val controller = openHome()

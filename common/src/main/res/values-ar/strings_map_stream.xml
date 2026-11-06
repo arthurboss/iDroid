@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">بريد خارطة CarPlay</string>
+    <string name="settings_map_stream_description">اطلب شاشة الخارطة من الـ iPhone أيضًا حتى تستطيع بطاقة الخارطة العائمة وعناصر واجهة التشغيل والتطبيقات الأخرى عرضها. يُطبّق عند الاتصال التالي.</string>
+    <string name="setup_connection_changeable_later">يمكنك تغيير هذا لاحقًا في الإعدادات → الاتصال.</string>
+</resources>

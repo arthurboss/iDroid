@@ -45,9 +45,6 @@
     <string name="ambient_delay_hint">0～60秒を入力してください。0にすると即座に切り替わります。</string>
     <string name="custom_number_error">%1$d～%2$dの整数を入力してください。</string>
     <string name="ambient_delay_summary">%1$d秒</string>
-    <string name="settings_navigation_wheel_volume">ナビ案内中のステアリング音量操作（実験的機能）</string>
-    <string name="settings_navigation_wheel_volume_description">CarPlayが音声案内を再生している間、音量キーで選択中のナビ音声ストリームを調整します。それ以外では車載端末本来の動作に従います。ステアリングのユーザー補助サービス権限が必要です。通話、地図の拡大・縮小、ジョイスティックが優先されます。</string>
-    <string name="settings_navigation_wheel_service_required">Android設定でステアリングスイッチのユーザー補助サービスを許可するか、既存のADB権限設定ボタンを使ってください。</string>
     <string name="settings_force_full_settings">常にフルサイズの設定画面を使用</string>
     <string name="settings_force_full_settings_hint">横画面ではカテゴリのサイドバーを備えたフルサイズの設定画面を使い、縦画面では自動レイアウトにします。ホーム画面とCarPlayは変更されません。</string>
     <string name="picture_surface_output_unavailable">この画面の互換映像出力では画質調整を使用できません。保存済みの調整値は維持されます。</string>

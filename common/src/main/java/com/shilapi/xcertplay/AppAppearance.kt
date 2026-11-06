@@ -34,9 +34,6 @@ internal fun resolveAppNight(
     }
 }
 
-internal fun shouldDeferAppearanceRender(windowKeyLearning: Boolean, serviceKeyLearning: Boolean): Boolean =
-    windowKeyLearning || serviceKeyLearning
-
 internal fun Context.resolveAppNightNow(hostNight: Boolean? = AppAppearanceRuntime.hostNight()): Boolean {
     val now = Calendar.getInstance()
     return resolveAppNight(

@@ -12,7 +12,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [29], manifest = Config.NONE)
 class CarPlayRemoteKeysTest {
-    @Test fun tvAndCarReservedKeysAreNotEligibleForCustomPlayPauseMapping() {
+    @Test fun tvAndSystemReservedKeysAreNotEligibleForCustomPlayPauseMapping() {
         // Fire TV, Google TV, Android TV, HID keyboards and gamepads all deliver these
         // standard KeyEvents; preserve OS navigation and the existing MediaSession.
         val reserved = listOf(
@@ -28,8 +28,6 @@ class CarPlayRemoteKeysTest {
             KeyEvent.KEYCODE_MEDIA_PAUSE, KeyEvent.KEYCODE_MEDIA_NEXT,
             KeyEvent.KEYCODE_MEDIA_PREVIOUS, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
             KeyEvent.KEYCODE_MEDIA_REWIND, KeyEvent.KEYCODE_POWER,
-            com.shilapi.xcertplay.airplay.CarPlayMediaButton.KEYCODE_BYD_CARPLAY_VOICE,
-            com.shilapi.xcertplay.airplay.CarPlayMediaButton.KEYCODE_BYD_AUTO_MEDIA_PLAY_PAUSE,
         )
         for (code in reserved) {
             assertTrue("existing remote control changed for keycode $code",
