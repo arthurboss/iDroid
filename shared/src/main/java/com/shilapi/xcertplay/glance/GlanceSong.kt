@@ -1,24 +1,24 @@
-package com.shilapi.xcertplay.hud
+package com.shilapi.xcertplay.glance
 
 import com.shilapi.xcertplay.iap2.body.Iap2BodyReader
 import com.shilapi.xcertplay.iap2.wire.Iap2Frame
 
 /** The song the iPhone reports; [line] preserves title-only text, [source] selects a note's music icon. */
-internal data class ClusterSong(val text: String, val playing: Boolean, val line: String = text, val source: Int? = null)
+internal data class GlanceSong(val text: String, val playing: Boolean, val line: String = text, val source: Int? = null)
 
 /**
  * The CarPlay song for the dashboard, from iAP2 NowPlayingUpdate (0x5001): title (1) and artist (12)
  * in MediaItemAttributes, playback status in PlaybackAttributes. Updates carry only what changed;
  * omitted fields retain their previous values, while an explicitly cleared title forgets the item.
  */
-internal class ClusterSongState {
+internal class GlanceSongState {
     private var title: String? = null
     private var artist: String? = null
     private var playing = false
-    private var last: ClusterSong? = null
+    private var last: GlanceSong? = null
 
     /** Updates the cached card; null can mean unchanged or cleared, so consumers compare [current]. */
-    fun accept(frame: Iap2Frame): ClusterSong? {
+    fun accept(frame: Iap2Frame): GlanceSong? {
         if (frame.messageId != NOW_PLAYING_UPDATE) return null
         val body = runCatching { Iap2BodyReader.of(frame) }.getOrNull() ?: return null
         runCatching { body.optionalGroup(ITEM) }.getOrNull()?.let { item ->
@@ -34,14 +34,14 @@ internal class ClusterSongState {
         runCatching { body.optionalGroup(PLAYBACK)?.optionalU8(STATUS) }.getOrNull()?.let { status ->
             playing = status == STATUS_PLAYING || status == STATUS_SEEK_FORWARD || status == STATUS_SEEK_BACKWARD
         }
-        val next = text(title, artist)?.let { ClusterSong(it, playing, title!!.trim()) }
+        val next = text(title, artist)?.let { GlanceSong(it, playing, title!!.trim()) }
         if (next == last) return null
         last = next
         return next
     }
 
     /** The card for the song known so far, if any. */
-    fun current(): ClusterSong? = last
+    fun current(): GlanceSong? = last
 
     /** The session ended: forget the song. */
     fun clear() {

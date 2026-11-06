@@ -17,9 +17,9 @@ Scope: what the app exposes to other apps and to the network, and what privilege
 
 ## What remains, and why
 
-**Local ADB (`LocalAdb`, `BydAdbShell`).** Used by `UsbPermissionSetup`, `IphoneUsbAdbGrant`,
+**Local ADB (`LocalAdb`, `AdbShell`).** Used by `UsbPermissionSetup`, `IphoneUsbAdbGrant`,
 `VpnPreConsent`, `WifiScanPause`, `CarHotspotConfigWrite`/`Read`, `CarHotspotTethering`'s fallback,
-`BydBootStartRepair` and `BydBluetoothSuspend`. Every one of these needs the owner to turn on
+`BootStartRepair` and `BluetoothSuspend`. Every one of these needs the owner to turn on
 wireless debugging in developer options *and* approve this app's ADB key in a system dialog, so it
 is user-authorised rather than a privilege escalation. It is still the largest remaining surface and
 the obvious next reduction: each use is a workaround for a permission the owner can now grant

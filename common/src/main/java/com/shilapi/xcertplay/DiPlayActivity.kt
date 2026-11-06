@@ -2573,7 +2573,7 @@ class DiPlayActivity : ComponentActivity(), AppAppearanceOwner {
             .show()
         Thread({
             val result = runCatching {
-                com.shilapi.xcertplay.hud.BydBootStartRepair.apply(applicationContext, packageName)
+                com.shilapi.xcertplay.adb.BootStartRepair.apply(applicationContext, packageName)
             }.getOrNull()
             runOnUiThread {
                 if (isFinishing || isDestroyed) return@runOnUiThread

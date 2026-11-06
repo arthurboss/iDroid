@@ -1,4 +1,4 @@
-package com.shilapi.xcertplay.hud
+package com.shilapi.xcertplay.bluetooth
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

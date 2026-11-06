@@ -83,16 +83,8 @@ internal class MicrophoneUplink(
             config.audioType == "telephony" -> telephonyMicrophoneSource(
                 speakerphoneCall = speakerphoneCall,
                 carPhoneState = PhoneAudioRoute.carPlayCallsUseCarAudio(),
-                geelyHeadUnit = com.shilapi.xcertplay.network.GeelyHeadUnit.detected,
             )
-            // The Geely/Lynk head unit only opens the microphone for the voice-communication
-            // source; its voice-recognition source records silence, so Siri never hears.
-            config.audioType == "speechrecognition" ->
-                if (com.shilapi.xcertplay.network.GeelyHeadUnit.detected) {
-                    MediaRecorder.AudioSource.VOICE_COMMUNICATION
-                } else {
-                    MediaRecorder.AudioSource.VOICE_RECOGNITION
-                }
+            config.audioType == "speechrecognition" -> MediaRecorder.AudioSource.VOICE_RECOGNITION
             else -> MediaRecorder.AudioSource.MIC
         }
         stats.useSource(source)
@@ -545,8 +537,8 @@ internal class MicrophoneUplink(
  * service ends up with, gives a normal level with no clipping, and the car still suppresses the far end's
  * echo on it. Geely/Lynk head units record silence on VOICE_RECOGNITION, so they keep the old choice.
  */
-internal fun telephonyMicrophoneSource(speakerphoneCall: Boolean, carPhoneState: Boolean, geelyHeadUnit: Boolean): Int = when {
-    carPhoneState && !geelyHeadUnit -> MediaRecorder.AudioSource.VOICE_RECOGNITION
+internal fun telephonyMicrophoneSource(speakerphoneCall: Boolean, carPhoneState: Boolean): Int = when {
+    carPhoneState -> MediaRecorder.AudioSource.VOICE_RECOGNITION
     speakerphoneCall -> MediaRecorder.AudioSource.MIC
     else -> MediaRecorder.AudioSource.VOICE_COMMUNICATION
 }

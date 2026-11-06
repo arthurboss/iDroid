@@ -1,4 +1,4 @@
-package com.shilapi.xcertplay.hud
+package com.shilapi.xcertplay.bluetooth
 
 /** A durable promise to restore a radio observed ON before our disable command. */
 internal interface BluetoothRestoreJournal {

@@ -1,7 +1,7 @@
 package com.shilapi.xcertplay.glance
 
-import com.shilapi.xcertplay.hud.BydHudRouteState
-import com.shilapi.xcertplay.hud.ClusterSongState
+import com.shilapi.xcertplay.glance.RouteGuidanceState
+import com.shilapi.xcertplay.glance.GlanceSongState
 import com.shilapi.xcertplay.iap2.message.Iap2LaneGuidance
 import com.shilapi.xcertplay.iap2.message.LaneGuidanceLane
 import com.shilapi.xcertplay.iap2.wire.Iap2Frame
@@ -29,8 +29,8 @@ object CarPlayGlance {
     private const val LANE_GUIDANCE_UPDATE = 0x5204
     private const val TAG = "DiPlay-Lane"
 
-    private val route = BydHudRouteState()
-    private val song = ClusterSongState()
+    private val route = RouteGuidanceState()
+    private val song = GlanceSongState()
     private var connected = false
     private var last = Snapshot()
 
@@ -64,9 +64,9 @@ object CarPlayGlance {
         }
         val changed = synchronized(this) {
             when (frame.messageId) {
-                BydHudRouteState.ROUTE_GUIDANCE_UPDATE, BydHudRouteState.ROUTE_GUIDANCE_MANEUVER_UPDATE ->
+                RouteGuidanceState.ROUTE_GUIDANCE_UPDATE, RouteGuidanceState.ROUTE_GUIDANCE_MANEUVER_UPDATE ->
                     runCatching { route.accept(frame.messageId, frame.payload) }
-                ClusterSongState.NOW_PLAYING_UPDATE -> runCatching { song.accept(frame) }
+                GlanceSongState.NOW_PLAYING_UPDATE -> runCatching { song.accept(frame) }
                 else -> return
             }
             publishLocked()

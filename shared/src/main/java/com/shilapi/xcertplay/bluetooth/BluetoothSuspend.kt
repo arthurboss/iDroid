@@ -1,21 +1,22 @@
-package com.shilapi.xcertplay.hud
+package com.shilapi.xcertplay.bluetooth
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.os.SystemClock
 import android.util.Log
+import com.shilapi.xcertplay.adb.AdbShell
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
 /** Optional radio pause using already-authorized local ADB; pairing is never changed. */
-object BydBluetoothSuspend {
+object BluetoothSuspend {
     private const val TAG = "DiPlay-BT-Suspend"
     private const val PREFS = "diplay_bt_suspend"
     private const val KEY_RESTORE_ENABLED = "restore_initially_enabled"
     private const val STATE_TIMEOUT_MILLIS = 8_000L
-    private val shell = BydAdbShell(TAG)
+    private val shell = AdbShell(TAG)
     private val worker = Executors.newSingleThreadScheduledExecutor { task ->
         Thread(task, "diplay-bt-suspend").apply { isDaemon = true }
     }
