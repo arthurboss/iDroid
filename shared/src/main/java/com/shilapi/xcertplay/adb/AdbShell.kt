@@ -54,7 +54,7 @@ internal class AdbShell(private val tag: String) {
 }
 
 /** Reads `service call` replies such as `Result: Parcel(00000000 00000002 '........')`. */
-internal object BydParcel {
+internal object ParcelReply {
     /** The value after a zero exception code, as its 32 raw bits. */
     fun value(output: String?): Int? {
         val words = words(output)

@@ -7,7 +7,7 @@ import com.shilapi.xcertplay.adb.LocalAdb
 import com.shilapi.xcertplay.host.R
 
 /**
- * Some firmware ships no VPN consent dialog (Geely Galaxy E8, #604), so wired CarPlay could never
+ * Some firmware ships no VPN consent dialog (#604), so wired CarPlay could never
  * start. Android counts an allowed ACTIVATE_VPN app op as that consent, and the car's own adb can
  * set it. Only an adb key the driver already approved is used; this never asks for approval.
  */
