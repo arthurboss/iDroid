@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">CarPlay harita akışı</string>
+    <string name="settings_map_stream_description">iPhone’dan harita ekranını da iste; böylece yüzen harita kartı, başlatıcı bileşeni ve diğer uygulamalar onu gösterebilir. Sonraki bağlantıda geçerli olur.</string>
+    <string name="setup_connection_changeable_later">Bunu daha sonra Ayarlar → Bağlantı bölümünden değiştirebilirsin.</string>
+</resources>

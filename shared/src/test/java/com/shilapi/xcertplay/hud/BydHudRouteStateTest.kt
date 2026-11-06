@@ -20,7 +20,7 @@ class BydHudRouteStateTest {
         )
 
         assertEquals(BydHudRouteChange.GUIDANCE, change)
-        assertEquals(BydHudGuidance(distanceMeters = 150, maneuver = 1, gaode = 1), state.current())
+        assertEquals(BydAppleManeuver(distanceMeters = 150, type = 1, drivingSide = 0), state.currentApple())
     }
 
     @Test
@@ -35,7 +35,7 @@ class BydHudRouteStateTest {
             tlvs(tlv(0x01, 1), tlv(0x0a, 0, 0, 0, 50), tlv(0x0d, 0, 3)),
         )
 
-        assertEquals(BydHudGuidance(distanceMeters = 50, maneuver = 8, gaode = 10), state.current())
+        assertEquals(BydAppleManeuver(distanceMeters = 50, type = 4, drivingSide = 1), state.currentApple())
     }
 
     @Test
@@ -45,18 +45,18 @@ class BydHudRouteStateTest {
         val change = state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 2)))
 
         assertEquals(BydHudRouteChange.CLEAR, change)
-        assertNull(state.current())
+        assertNull(state.currentApple())
     }
 
     @Test
     fun `overlay keeps the last instruction across a NoRouteSet handoff`() {
         val state = populatedState(keepAcrossNoRoute = true)
-        val before = state.current()
+        val before = state.currentApple()
 
         val change = state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 0)))
 
         assertEquals(BydHudRouteChange.NONE, change)
-        assertEquals(before, state.current())
+        assertEquals(before, state.currentApple())
     }
 
     @Test
@@ -67,9 +67,9 @@ class BydHudRouteStateTest {
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 0)))
         now = 4_000_000_000L
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 0)))
-        assertEquals(25, state.current()!!.distanceMeters)
+        assertEquals(25, state.currentApple()!!.distanceMeters)
         now = 5_000_000_000L
-        assertNull(state.current())
+        assertNull(state.currentApple())
     }
 
     @Test
@@ -80,7 +80,7 @@ class BydHudRouteStateTest {
         now = 1_000_000_000L
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 1), tlv(0x0a, 0, 0, 0, 20)))
         now = 10_000_000_000L
-        assertEquals(20, state.current()!!.distanceMeters)
+        assertEquals(20, state.currentApple()!!.distanceMeters)
     }
 
     @Test
@@ -92,7 +92,7 @@ class BydHudRouteStateTest {
         now = 10_000_000_000L
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 0)))
         now = 20_000_000_000L
-        assertEquals(25, state.current()!!.distanceMeters)
+        assertEquals(25, state.currentApple()!!.distanceMeters)
     }
 
     @Test
@@ -102,13 +102,13 @@ class BydHudRouteStateTest {
         val change = state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 2)))
 
         assertEquals(BydHudRouteChange.CLEAR, change)
-        assertNull(state.current())
+        assertNull(state.currentApple())
     }
 
     @Test
     fun `malformed frame does not alter active guidance`() {
         val state = populatedState()
-        val before = state.current()
+        val before = state.currentApple()
 
         val change = state.accept(
             BydHudRouteState.ROUTE_GUIDANCE_UPDATE,
@@ -116,7 +116,7 @@ class BydHudRouteStateTest {
         )
 
         assertEquals(BydHudRouteChange.NONE, change)
-        assertEquals(before, state.current())
+        assertEquals(before, state.currentApple())
     }
 
 
@@ -135,7 +135,7 @@ class BydHudRouteStateTest {
             ),
         )
 
-        val guidance = state.current()!!
+        val guidance = state.currentApple()!!
         assertEquals("Am Wehr", guidance.road)
         assertEquals(0x68d52a40L, guidance.arrivalEpochSeconds)
         assertEquals(300, guidance.distanceMeters)
@@ -148,9 +148,9 @@ class BydHudRouteStateTest {
 
         assertEquals(BydHudRouteChange.NONE, state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 5), tlv(0x0d))))
         now = 2_000_000_000L
-        assertEquals(2, state.current()!!.maneuver) // a blip does not blank the outputs
+        assertEquals(2, state.currentApple()!!.type) // a blip does not blank the outputs
         now = 3_100_000_000L
-        assertNull(state.current())
+        assertNull(state.currentApple())
 
         // The iPhone lists the same maneuver again without resending its 0x5202 details.
         val resumed = state.accept(
@@ -158,7 +158,7 @@ class BydHudRouteStateTest {
             tlvs(tlv(0x01, 1), tlv(0x0a, 0, 0, 0, 20), tlv(0x0d, 0, 1)),
         )
         assertEquals(BydHudRouteChange.GUIDANCE, resumed)
-        assertEquals(2, state.current()!!.maneuver)
+        assertEquals(2, state.currentApple()!!.type)
     }
 
     @Test
@@ -169,17 +169,15 @@ class BydHudRouteStateTest {
             BydHudRouteState.ROUTE_GUIDANCE_UPDATE,
             tlvs(tlv(0x01, 1), tlv(0x03, *utf8z("Hauptstraße")), tlv(0x0d, 0, 0)),
         )
-        assertEquals("Hauptstraße", state.current()!!.road)
+        assertEquals("Hauptstraße", state.currentApple()!!.road)
     }
 
     @Test
-    fun `roundabout exit has blank arrow and exit icon`() {
+    fun `a roundabout exit is passed through as Apple sent it`() {
         val state = BydHudRouteState()
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_MANEUVER_UPDATE, tlvs(tlv(0x01, 0, 0), tlv(0x03, 29)))
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x01, 1), tlv(0x0d, 0, 0)))
-        val guidance = state.current()!!
-        assertEquals(99, guidance.maneuver)
-        assertEquals(26, guidance.gaode)
+        assertEquals(29, state.currentApple()!!.type)
     }
 
     @Test
@@ -187,16 +185,16 @@ class BydHudRouteStateTest {
         var now = 0L
         val state = populatedState(nanoTime = { now })
         now = 30_000_000_000L
-        assertNull(state.current())
+        assertNull(state.currentApple())
         state.accept(BydHudRouteState.ROUTE_GUIDANCE_UPDATE, tlvs(tlv(0x0a, 0, 0, 0, 20)))
-        assertEquals(20, state.current()!!.distanceMeters)
+        assertEquals(20, state.currentApple()!!.distanceMeters)
     }
 
     @Test
     fun `clear prevents a keepalive from restoring guidance`() {
         val state = populatedState()
         state.clear()
-        assertNull(state.current())
+        assertNull(state.currentApple())
         assertNull(state.currentApple())
     }
 

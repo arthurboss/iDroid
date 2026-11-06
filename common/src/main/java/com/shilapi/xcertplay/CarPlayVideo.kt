@@ -8,8 +8,8 @@ import android.util.Log
 import android.widget.Toast
 import com.shilapi.xcertplay.airplay.CarPlayMediaButton
 import com.shilapi.xcertplay.airplay.VideoInCar
+import com.shilapi.xcertplay.airplay.VideoPlaybackSettings
 import com.shilapi.xcertplay.host.R
-import com.shilapi.xcertplay.hud.BydNavigationOutputs
 import com.shilapi.xcertplay.orchestration.CarPlayController
 import com.shilapi.xcertplay.orchestration.CarPlayVideoListener
 import java.util.concurrent.CompletableFuture
@@ -54,10 +54,14 @@ internal object CarPlayVideo : CarPlayVideoListener {
         next.videoListener = this
     }
 
-    override fun readParked(): Boolean? = appContext?.let(BydNavigationOutputs::parked)
+    /**
+     * iOS 27 video in car plays only where the receiver reports a stopped vehicle. A tablet has no
+     * gear signal, so the owner's opt-in is the whole answer, and it stays off until they give it.
+     */
+    override fun readParked(): Boolean? = appContext?.let(VideoPlaybackSettings::allowed)
 
     override fun onVideoAllowedChanged(allowed: Boolean) {
-        if (!allowed) main.post { closePlayer("the car left P") }
+        if (!allowed) main.post { closePlayer("video playback was turned off") }
     }
 
     override fun onVideoSessionEnded() {

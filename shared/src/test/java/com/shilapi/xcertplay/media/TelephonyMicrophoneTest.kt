@@ -12,7 +12,7 @@ import com.shilapi.xcertplay.airplay.AudioStreamId
 import com.shilapi.xcertplay.airplay.AudioFormat
 import com.shilapi.xcertplay.airplay.AudioCodecKind
 import com.shilapi.xcertplay.airplay.MicrophoneConfig
-import com.shilapi.xcertplay.hud.BydOutputSettings
+import com.shilapi.xcertplay.telecom.PhoneAudioRouteSettings
 import com.shilapi.xcertplay.telecom.PhoneAudioRoute
 import java.net.InetAddress
 import java.util.concurrent.CountDownLatch
@@ -148,7 +148,7 @@ class TelephonyMicrophoneTest {
 
     @Test fun aCallInTheCarsPhoneStateRecordsFromVoiceRecognitionWithoutCallEffects() {
         val diagnostics = recordDiagnostics()
-        BydOutputSettings.setPhoneAudioRoute(context, true)
+        PhoneAudioRouteSettings.setCarPlayCalls(context, true)
         PhoneAudioRoute.attach(context)
         try {
             sink.onMicrophoneStarted(telephony, config("telephony"))
@@ -159,7 +159,7 @@ class TelephonyMicrophoneTest {
                 diagnostics.any { it.startsWith("Microphone: start type=telephony source=VOICE_RECOGNITION ") })
             assertTrue(ShadowAudioEffect.getAudioEffects().isEmpty())
         } finally {
-            BydOutputSettings.setPhoneAudioRoute(context, false)
+            PhoneAudioRouteSettings.setCarPlayCalls(context, false)
         }
     }
 

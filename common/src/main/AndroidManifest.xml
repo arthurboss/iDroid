@@ -130,7 +130,7 @@
                 android:resource="@xml/navigation_widget_info" />
         </receiver>
 
-        <!-- The live dashboard map for launchers that embed it (docs/LAUNCHER_INTEGRATION.md). -->
+        <!-- The live CarPlay map for launchers and apps that embed it (docs/LAUNCHER_INTEGRATION.md). -->
         <service
             android:name="com.shilapi.xcertplay.MapEmbedService"
             android:exported="true"
@@ -138,20 +138,6 @@
             <intent-filter>
                 <action android:name="com.shihab.diplay.action.EMBED_MAP" />
             </intent-filter>
-        </service>
-
-        <!-- Optional: steering-wheel keys for the dashboard map zoom. -->
-        <service
-            android:name="com.shilapi.xcertplay.WheelKeyService"
-            android:exported="true"
-            android:label="@string/wheel_key_service_label"
-            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
-            <intent-filter>
-                <action android:name="android.accessibilityservice.AccessibilityService" />
-            </intent-filter>
-            <meta-data
-                android:name="android.accessibilityservice"
-                android:resource="@xml/wheel_key_service" />
         </service>
 
         <receiver

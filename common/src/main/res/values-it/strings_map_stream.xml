@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">Flusso mappa CarPlay</string>
+    <string name="settings_map_stream_description">Chiedi all’iPhone anche la sua schermata mappa, così la scheda mappa flottante, il widget del launcher e altre app possono mostrarla. Si applica alla connessione successiva.</string>
+    <string name="setup_connection_changeable_later">Puoi cambiarlo più tardi in Impostazioni → Connessione.</string>
+</resources>

@@ -2,6 +2,10 @@
 
 Instructions for coding agents that work on DiPlay.
 
+This fork targets an ordinary Android tablet or phone. Nothing reads from or writes to a vehicle:
+no instrument cluster, windshield HUD, vehicle telemetry, steering-wheel keys or interior lighting.
+Do not reintroduce them, and prefer device-neutral names in new code.
+
 ## Checks
 
 Run the CI command from `.github/workflows/android.yml` before you report a change as done:
@@ -27,19 +31,21 @@ Ask which goal the driver has when they look for the setting. Use the first row 
 
 | Category | Put a setting here when it controls… | Examples |
 | --- | --- | --- |
-| Connection | how the iPhone connects and how DiPlay starts | connection setup, connect on open, start with the car, USB permissions, car hotspot automation, iPhone choice, Android permissions |
-| Display | how CarPlay looks on the head-unit screen | day/night mode, picture, size, resolution, frame rate, dock, system bars, multi-window resolution |
-| Audio | what the driver hears | media and navigation streams, music buffer |
-| Navigation | location and turn-by-turn guidance | location to iPhone, BYD HUD and cluster guidance |
-| Vehicle | how CarPlay fits this car and its driver | driving side, wheel keys (Siri, BYD joystick and map zoom), car button, gestures that conflict with the head unit |
+| Connection | how the iPhone connects and how DiPlay starts | connection setup, connect on open, start after boot, USB permissions, hotspot control, iPhone choice, Android permissions |
+| Display | how CarPlay looks and how the owner reaches it on this screen | day/night mode, picture, size, resolution, frame rate, dock, system bars, multi-window resolution, driving side, settings gesture, external controllers, CarPlay's home-button icon and label |
+| Audio | what the owner hears | media and navigation streams, navigation attenuation, music buffer |
+| Navigation | location and turn-by-turn guidance | location to iPhone |
 | Diagnostics | troubleshooting evidence | diagnostic reports |
-| Advanced | experimental, firmware-specific or risky behavior | dashboard map, split screen, screen rotation, side panel, HEVC video, audio focus, audio channel mapping, buffered music, vehicle data |
+| Advanced | experimental, firmware-specific or risky behavior | CarPlay map stream, launcher bubble, split screen, screen rotation, side panel, HEVC video, audio focus, audio channel mapping, buffered music, video playback |
 | Overview | nothing new | see "Overview" below |
 
-A setting goes to Advanced when it is experimental, depends on specific firmware, or is an opt-in that can break sound, video or the connection on some head units.
+There is no Vehicle category: a setting that would have gone there either belongs in Display (how
+the owner reaches the projected screen) or does not belong in this fork at all.
+
+A setting goes to Advanced when it is experimental, depends on specific firmware, or is an opt-in that can break sound, video or the connection on some devices.
 A control that fixes a common problem and is safe at its default (for example the audio stream choice) stays in its category.
 Exception: a gated control that only its own audience sees, and that completes an everyday goal, stays in that goal's category.
-Example: auto car hotspot needs ADB but appears only for car-hotspot users, so it is in Connection.
+Example: automatic hotspot startup appears only for hotspot users, so it is in Connection.
 
 Mark an experimental setting or card with the title suffix ` (experimental)`, never `· experimental`, a dash, or an `Experimental …` prefix.
 Each locale MUST use its existing form: `(تجريبي)`, `(experimental)`, `(sperimentale)`, `(экспериментально)`, `(експериментально)`, `(deneysel)`, `（实验性）`, `（實驗性）`, `（実験的機能）`, `(실험 기능)`.

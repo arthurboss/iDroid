@@ -9,46 +9,21 @@ import org.junit.Test
 
 class CarPlayMediaButtonTest {
     @Test
-    fun steeringWheelKeysMapToCarPlayMediaPresses() {
+    fun hardwareMediaKeysMapToCarPlayMediaPresses() {
         assertEquals(CarPlayMediaButton.NEXT, CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_MEDIA_NEXT))
         assertEquals(CarPlayMediaButton.PREVIOUS, CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_MEDIA_PREVIOUS))
-        // BYD rewrites its play/pause key into PLAY or PAUSE from the session state; both toggle.
+        // A key only reports that play/pause was pressed, so both map to the toggle.
         assertEquals(CarPlayMediaButton.PLAY_PAUSE, CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_MEDIA_PLAY))
         assertEquals(CarPlayMediaButton.PLAY_PAUSE, CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_MEDIA_PAUSE))
         assertEquals(CarPlayMediaButton.PLAY_PAUSE, CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE))
         assertEquals(CarPlayMediaButton.PLAY_PAUSE, CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_HEADSETHOOK))
-        assertEquals(CarPlayMediaButton.PLAY_PAUSE, CarPlayMediaButton.forKeyCode(353))
-        // DiLink 3 (Han, GCC) sends KEYCODE_AUTO_MEDIA_PLAY_PAUSE unchanged.
-        assertNull(CarPlayMediaButton.forKeyCode(331))
-        assertEquals(CarPlayMediaButton.PLAY_PAUSE,
-            CarPlayMediaButton.forKeyCode(331, experimentalDiLink3Keys = true))
-    }
-
-    @Test
-    fun dilink3CarPlayVoiceKeysOpenSiriOnlyThroughTheWheelKeyService() {
-        assertTrue(CarPlayMediaButton.opensSiriWhileCarPlay(327))
-        assertTrue(CarPlayMediaButton.opensSiriWhileCarPlay(328))
-        assertFalse(CarPlayMediaButton.opensSiriWhileCarPlay(304))
-        assertFalse(CarPlayMediaButton.opensSiri(327))
-    }
-
-    @Test
-    fun theWheelsShortVoiceKeysAreTheCarPlayAndGenericShortCodes() {
-        assertTrue(CarPlayMediaButton.isShortVoiceKey(327))
-        assertTrue(CarPlayMediaButton.isShortVoiceKey(304))
-        assertFalse(CarPlayMediaButton.isShortVoiceKey(328))
-        assertFalse(CarPlayMediaButton.isShortVoiceKey(312))
-        assertFalse(CarPlayMediaButton.isShortVoiceKey(KeyEvent.KEYCODE_VOICE_ASSIST))
     }
 
     @Test
     fun theVoiceKeyOpensSiri() {
-        // Recorded on DiLink 5.0: short press 304 (scan 290), long press 312 (scan 312).
-        assertTrue(CarPlayMediaButton.opensSiri(304))
-        assertTrue(CarPlayMediaButton.opensSiri(312))
         assertTrue(CarPlayMediaButton.opensSiri(KeyEvent.KEYCODE_VOICE_ASSIST))
         assertFalse(CarPlayMediaButton.opensSiri(KeyEvent.KEYCODE_MEDIA_NEXT))
-        assertNull(CarPlayMediaButton.forKeyCode(304))
+        assertNull(CarPlayMediaButton.forKeyCode(KeyEvent.KEYCODE_VOICE_ASSIST))
     }
 
     @Test
@@ -72,7 +47,7 @@ class CarPlayMediaButtonTest {
 
         assertEquals(CarPlayMediaButton.NEXT, claim(KeyEvent.KEYCODE_MEDIA_NEXT))
         assertEquals(CarPlayMediaButton.PREVIOUS, claim(KeyEvent.KEYCODE_MEDIA_PREVIOUS))
-        // Without a session, or during a call, the wheel keeps the car's own action.
+        // Without a session, or during a call, the key keeps the system's own action.
         assertNull(claim(KeyEvent.KEYCODE_MEDIA_NEXT, sessionActive = false))
         assertNull(claim(KeyEvent.KEYCODE_MEDIA_PREVIOUS, sessionActive = false))
         assertNull(claim(KeyEvent.KEYCODE_MEDIA_NEXT, inCall = true))
@@ -81,10 +56,10 @@ class CarPlayMediaButtonTest {
 
     @Test
     fun theWindowLeavesPlayPauseAndUnrelatedKeysAlone() {
-        // BYD acts on play/pause itself, and the wheel key service owns it for DiLink 3. Claiming it
-        // in the window too would take it away from the car for every driver.
+        // Play/pause stays with the media session, which already reaches CarPlay; claiming it in the
+        // window as well would take the key away from every other media app on the device.
         for (keyCode in listOf(KeyEvent.KEYCODE_MEDIA_PLAY, KeyEvent.KEYCODE_MEDIA_PAUSE,
-            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_HEADSETHOOK, 353, 331,
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE, KeyEvent.KEYCODE_HEADSETHOOK,
             KeyEvent.KEYCODE_MEDIA_STOP, KeyEvent.KEYCODE_VOLUME_UP)) {
             assertNull("keyCode=$keyCode", CarPlayMediaButton.forCarPlayWindow(keyCode, true, false))
         }

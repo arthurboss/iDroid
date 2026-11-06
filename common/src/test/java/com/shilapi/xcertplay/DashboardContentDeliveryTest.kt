@@ -24,7 +24,7 @@ import org.robolectric.annotation.LooperMode
 class DashboardContentDeliveryTest {
     private class Fixture : AutoCloseable {
         val config = AirPlayConfig("test", "test", "", "1", AirPlayDisplayConfig(800, 480),
-            cluster = AirPlayDisplayConfig(1600, 600, initialUrl = CarPlayClusterDisplay.Content.TURN_CARD.url))
+            cluster = AirPlayDisplayConfig(1600, 600, initialUrl = TURN_CARD_URL))
         val controller = CarPlayController(RuntimeEnvironment.getApplication(),
             CarPlayRuntimeConfig(mfiTarget = MfiTarget.LOCAL, identification = Iap2IdentificationConfig(
                 name = "test", modelIdentifier = "test", manufacturer = "test", serialNumber = "test",
@@ -105,11 +105,11 @@ class DashboardContentDeliveryTest {
     @Test fun aMissingPhoneOrClusterReportsFailureImmediately() {
         Fixture().use { f ->
             val withoutPhone = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, withoutPhone::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, withoutPhone::accept)
             assertFalse(withoutPhone.await())
             f.activate(f.phone(setup = false))
             val withoutCluster = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, withoutCluster::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, withoutCluster::accept)
             assertFalse(withoutCluster.await())
         }
     }
@@ -151,9 +151,9 @@ class DashboardContentDeliveryTest {
             f.activate(phone)
             f.controller.setDashboardMapOutputVisible(true)
             val complete = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
             assertFalse(complete.await()) // Accepted by the executor, but there is no event channel.
-            assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, phone.clusterUrl())
+            assertEquals(TURN_CARD_URL, phone.clusterUrl())
             assertNull(f.controller.dashboardMapRoute())
         }
     }
@@ -166,13 +166,13 @@ class DashboardContentDeliveryTest {
             val event = eventReady(phone)
             val complete = Completion()
             val writesAtCompletion = AtomicReference(0)
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL) {
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL) {
                 writesAtCompletion.set(event.writes)
                 complete.accept(it)
             }
             assertTrue(complete.await())
             assertEquals(2, writesAtCompletion.get())
-            assertEquals(CarPlayClusterDisplay.MAP_URL, phone.clusterUrl())
+            assertEquals(CarPlayAltScreen.MAP_URL, phone.clusterUrl())
             assertNotNull(f.controller.dashboardMapRoute())
         }
     }
@@ -185,7 +185,7 @@ class DashboardContentDeliveryTest {
             val release = blockQueue(f.controller)
             try {
                 val complete = Completion()
-                f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+                f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
                 assertTrue(complete.pending())
                 f.activate(f.phone())
                 release.countDown()
@@ -203,12 +203,12 @@ class DashboardContentDeliveryTest {
             val release = blockQueue(f.controller)
             try {
                 val complete = Completion()
-                f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+                f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
                 setup(phone)
                 release.countDown()
                 assertFalse(complete.await())
                 assertEquals(0, event.writes)
-                assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, phone.clusterUrl())
+                assertEquals(TURN_CARD_URL, phone.clusterUrl())
             } finally { release.countDown() }
         }
     }
@@ -220,9 +220,9 @@ class DashboardContentDeliveryTest {
             val replacement = f.phone()
             eventReady(phone, EventSocket { f.activate(replacement) })
             val complete = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
             assertFalse(complete.await())
-            assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, replacement.clusterUrl())
+            assertEquals(TURN_CARD_URL, replacement.clusterUrl())
         }
     }
 
@@ -235,7 +235,7 @@ class DashboardContentDeliveryTest {
             assertNull(phone.clusterUrl())
             visibility(f.controller, true)
             assertEquals(3, event.writes)
-            assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, phone.clusterUrl())
+            assertEquals(TURN_CARD_URL, phone.clusterUrl())
         }
     }
 
@@ -247,13 +247,13 @@ class DashboardContentDeliveryTest {
             val event = eventReady(phone)
             visibility(f.controller, false)
             val complete = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
             assertTrue(complete.await()) // The pending choice is safely retained while paused.
             assertEquals(1, event.writes)
-            assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, phone.clusterUrl())
+            assertEquals(TURN_CARD_URL, phone.clusterUrl())
             assertNull(f.controller.dashboardMapRoute())
             visibility(f.controller, true)
-            assertEquals(CarPlayClusterDisplay.MAP_URL, phone.clusterUrl())
+            assertEquals(CarPlayAltScreen.MAP_URL, phone.clusterUrl())
             assertNotNull(f.controller.dashboardMapRoute())
         }
     }
@@ -265,7 +265,7 @@ class DashboardContentDeliveryTest {
             f.record(first)
             f.awaitCommands()
             val complete = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
             assertTrue(complete.await())
             val second = f.phone()
             val event = eventReady(second)
@@ -273,11 +273,11 @@ class DashboardContentDeliveryTest {
             try {
                 f.record(second) // Activation must return while command execution is still blocked.
                 assertEquals(0, event.writes)
-                assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, second.clusterUrl())
+                assertEquals(TURN_CARD_URL, second.clusterUrl())
                 release.countDown()
                 f.awaitCommands()
                 assertEquals(2, event.writes)
-                assertEquals(CarPlayClusterDisplay.MAP_URL, second.clusterUrl())
+                assertEquals(CarPlayAltScreen.MAP_URL, second.clusterUrl())
             } finally { release.countDown() }
         }
     }
@@ -289,7 +289,7 @@ class DashboardContentDeliveryTest {
             f.record(first)
             f.awaitCommands()
             val complete = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, complete::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, complete::accept)
             assertTrue(complete.await())
             val second = f.phone(setup = false)
             val event = eventReady(second)
@@ -298,10 +298,10 @@ class DashboardContentDeliveryTest {
             assertEquals(0, event.writes)
             assertNull(second.clusterUrl())
             setup(second)
-            assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, second.clusterUrl())
+            assertEquals(TURN_CARD_URL, second.clusterUrl())
             second.javaClass.getDeclaredMethod("notifySetupResponseSent").apply { isAccessible = true }.invoke(second)
             assertEquals(2, event.writes)
-            assertEquals(CarPlayClusterDisplay.MAP_URL, second.clusterUrl())
+            assertEquals(CarPlayAltScreen.MAP_URL, second.clusterUrl())
         }
     }
 
@@ -312,17 +312,17 @@ class DashboardContentDeliveryTest {
             f.record(first)
             f.awaitCommands()
             val accepted = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, accepted::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, accepted::accept)
             assertTrue(accepted.await())
             set(first, "eventSocket", null)
             val failed = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.Content.INSTRUMENTS.url, failed::accept)
+            f.controller.showDashboardContent(INSTRUMENTS_URL, failed::accept)
             assertFalse(failed.await())
             val second = f.phone()
             eventReady(second)
             f.record(second)
             f.awaitCommands()
-            assertEquals(CarPlayClusterDisplay.MAP_URL, second.clusterUrl())
+            assertEquals(CarPlayAltScreen.MAP_URL, second.clusterUrl())
         }
     }
 
@@ -333,19 +333,19 @@ class DashboardContentDeliveryTest {
             f.record(first)
             f.awaitCommands()
             val accepted = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, accepted::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, accepted::accept)
             assertTrue(accepted.await())
             val second = f.phone()
             eventReady(second)
             val release = blockQueue(f.controller)
             try {
                 val stale = Completion()
-                f.controller.showDashboardContent(CarPlayClusterDisplay.Content.INSTRUMENTS.url, stale::accept)
+                f.controller.showDashboardContent(INSTRUMENTS_URL, stale::accept)
                 f.record(second)
                 release.countDown()
                 assertFalse(stale.await())
                 f.awaitCommands()
-                assertEquals(CarPlayClusterDisplay.MAP_URL, second.clusterUrl())
+                assertEquals(CarPlayAltScreen.MAP_URL, second.clusterUrl())
             } finally { release.countDown() }
         }
     }
@@ -357,16 +357,16 @@ class DashboardContentDeliveryTest {
             f.record(first)
             f.awaitCommands()
             val accepted = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, accepted::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, accepted::accept)
             assertTrue(accepted.await())
             val second = f.phone()
             eventReady(second)
             eventReady(first, EventSocket { f.record(second) })
             val stale = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.Content.INSTRUMENTS.url, stale::accept)
+            f.controller.showDashboardContent(INSTRUMENTS_URL, stale::accept)
             assertFalse(stale.await())
             f.awaitCommands()
-            assertEquals(CarPlayClusterDisplay.MAP_URL, second.clusterUrl())
+            assertEquals(CarPlayAltScreen.MAP_URL, second.clusterUrl())
         }
     }
 
@@ -378,14 +378,14 @@ class DashboardContentDeliveryTest {
             f.awaitCommands()
             visibility(f.controller, false)
             val accepted = Completion()
-            f.controller.showDashboardContent(CarPlayClusterDisplay.MAP_URL, accepted::accept)
+            f.controller.showDashboardContent(CarPlayAltScreen.MAP_URL, accepted::accept)
             assertTrue(accepted.await())
             f.record(first)
             f.awaitCommands()
             assertEquals(1, event.writes)
-            assertEquals(CarPlayClusterDisplay.Content.TURN_CARD.url, first.clusterUrl())
+            assertEquals(TURN_CARD_URL, first.clusterUrl())
             visibility(f.controller, true)
-            assertEquals(CarPlayClusterDisplay.MAP_URL, first.clusterUrl())
+            assertEquals(CarPlayAltScreen.MAP_URL, first.clusterUrl())
         }
     }
 
@@ -401,5 +401,9 @@ class DashboardContentDeliveryTest {
             controller.javaClass.getDeclaredMethod("applyClusterUi", Boolean::class.javaPrimitiveType)
                 .apply { isAccessible = true }.invoke(controller, shown)
         }
+
+        // The contents the iPhone lists for its secondary screen, as the fixture phone reports them.
+        const val TURN_CARD_URL = "maps:/car/instrumentcluster/instructioncard"
+        const val INSTRUMENTS_URL = "maps:/car/instrumentcluster"
     }
 }

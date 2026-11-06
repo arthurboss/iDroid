@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">CarPlay 地圖串流</string>
+    <string name="settings_map_stream_description">同時向 iPhone 請求地圖畫面，讓浮動地圖卡片、桌面小工具和其他應用程式可以顯示它。下次連線時生效。</string>
+    <string name="setup_connection_changeable_later">稍後可在設定 → 連線中更改。</string>
+</resources>

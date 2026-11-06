@@ -1,7 +1,6 @@
 package com.shilapi.xcertplay.network
 
 import android.content.Context
-import com.shilapi.xcertplay.adb.LocalAdb
 import com.shilapi.xcertplay.orchestration.WirelessHotspotMode
 
 object CarHotspotSettings {
@@ -17,16 +16,12 @@ object CarHotspotSettings {
     fun setConfigWrite(context: Context, enabled: Boolean) =
         prefs(context).edit().putBoolean("config_write", enabled).apply()
 
-    // Visibility is independent of the saved choice: ADB is only needed to grant permission.
-    fun visible(bydAvailable: Boolean, access: LocalAdb.Access): Boolean =
-        bydAvailable && (access == LocalAdb.Access.READY || access == LocalAdb.Access.NOT_APPROVED)
-
     fun shouldEnable(context: Context, wireless: Boolean, mode: WirelessHotspotMode): Boolean =
         enabled(context) && wireless && mode == WirelessHotspotMode.MANUAL
 
     /**
-     * Set when the driver connects although Android reports the car hotspot off. Some firmware reports it off
-     * while the car's own hotspot is on (Geely Galaxy E8, #604), and DiPlay then refused every connection.
+     * Set when the owner connects although Android reports the hotspot off. Some firmware reports it off
+     * while the hotspot is in fact on (#604), and DiPlay then refused every connection.
      */
     fun offReportIgnored(context: Context): Boolean = prefs(context).getBoolean("ignore_off_report", false)
 
@@ -47,8 +42,8 @@ object CarHotspotSettings {
 
     /**
      * Called when an attempt that connected past Android's "off" report found no hotspot. When Android still
-     * reports it off, the report was right: a BYD DiLink 2.0 keeps its hotspot switch on but starts the hotspot
-     * only once its own hotspot screen opens (#809). The driver's choice is dropped so the next attempt says the
+     * reports it off, the report was right: some firmware keeps the hotspot switch on but starts the hotspot
+     * only once its own hotspot screen opens (#809). The saved choice is dropped so the next attempt says the
      * hotspot is off instead of retrying for a minute. Returns true when it was dropped.
      */
     fun hotspotNeverCameUp(context: Context, state: Boolean?): Boolean {

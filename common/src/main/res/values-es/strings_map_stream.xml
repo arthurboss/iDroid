@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">Transmisión del mapa de CarPlay</string>
+    <string name="settings_map_stream_description">Pide al iPhone también su pantalla de mapa, para que la tarjeta flotante, el widget del lanzador y otras apps puedan mostrarla. Se aplica en la próxima conexión.</string>
+    <string name="setup_connection_changeable_later">Puedes cambiarlo más tarde en Ajustes → Conexión.</string>
+</resources>

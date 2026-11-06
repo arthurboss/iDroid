@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_map_stream">CarPlay マップストリーム</string>
+    <string name="settings_map_stream_description">iPhone にマップ画面も要求し、フローティングマップカード、ランチャーのウィジェット、他のアプリで表示できるようにします。次回の接続から有効になります。</string>
+    <string name="setup_connection_changeable_later">この設定は後から設定 → 接続で変更できます。</string>
+</resources>
