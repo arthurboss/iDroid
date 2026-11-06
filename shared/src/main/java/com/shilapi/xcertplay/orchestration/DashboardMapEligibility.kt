@@ -1,10 +1,12 @@
 package com.shilapi.xcertplay.orchestration
 
-import com.shilapi.xcertplay.airplay.CarPlayClusterDisplay
-
 /** A negotiated alt stream alone does not mean that the driver can see a map on the dashboard. */
 internal object DashboardMapEligibility {
+    /** Apple's instrument-cluster display URLs, as the iPhone names them when it negotiates the alt stream. */
+    private const val MAP_URL = "maps:/car/instrumentcluster/map"
+    private const val INSTRUMENTS_URL = "maps:/car/instrumentcluster"
+
     fun permits(initialUrl: String?, physicalOutputVisible: Boolean, stream: Int, uiShown: Boolean, closed: Boolean): Boolean =
         !closed && physicalOutputVisible && stream > 0 && uiShown &&
-            (initialUrl == CarPlayClusterDisplay.MAP_URL || initialUrl == CarPlayClusterDisplay.Content.INSTRUMENTS.url)
+            (initialUrl == MAP_URL || initialUrl == INSTRUMENTS_URL)
 }

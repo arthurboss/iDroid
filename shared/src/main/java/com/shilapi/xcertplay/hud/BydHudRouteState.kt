@@ -1,15 +1,5 @@
 package com.shilapi.xcertplay.hud
 
-internal data class BydHudGuidance(
-    val distanceMeters: Int,
-    /** Native HUD arrow (field 28). */
-    val maneuver: Int,
-    /** Gaode maneuver code: selects the HUD icon (field 8). */
-    val gaode: Int = 0,
-    val road: String = "",
-    val arrivalEpochSeconds: Long? = null,
-)
-
 internal data class BydAppleManeuver(
     val distanceMeters: Int,
     val type: Int,
@@ -65,19 +55,7 @@ internal class BydHudRouteState(
         }
     }
 
-    fun current(): BydHudGuidance? {
-        val maneuver = activeManeuver() ?: return null
-        val gaode = BydManeuverCodes.gaode(maneuver.type, maneuver.drivingSide)
-        return BydHudGuidance(
-            distanceMeters = distanceMeters,
-            maneuver = BydManeuverCodes.hudArrow(gaode),
-            gaode = gaode,
-            road = roadFor(maneuver),
-            arrivalEpochSeconds = arrivalEpochSeconds,
-        )
-    }
-
-    /** Next maneuver as Apple sent it, for outputs with a richer icon set than the HUD. */
+    /** Next maneuver as Apple sent it. */
     fun currentApple(): BydAppleManeuver? {
         val maneuver = activeManeuver() ?: return null
         return BydAppleManeuver(
@@ -172,7 +150,7 @@ internal class BydHudRouteState(
         }
         // The iPhone briefly sends an empty current list every few seconds and while rerouting. Keep the last
         // maneuver (and the cached 0x5202 details, which are never resent) and hide it only if the list stays
-        // empty; the bridges' 1 s tick clears the outputs once current() turns null.
+        // empty.
         if (listPresent && firstManeuver == null) {
             if (emptyListSinceNs == null) emptyListSinceNs = nanoTime()
             return BydHudRouteChange.NONE
@@ -184,7 +162,7 @@ internal class BydHudRouteState(
             routeActive = true
         }
         if (distance != null) distanceMeters = distance!!.coerceAtLeast(0)
-        return if (current() != null) BydHudRouteChange.GUIDANCE else BydHudRouteChange.NONE
+        return if (currentApple() != null) BydHudRouteChange.GUIDANCE else BydHudRouteChange.NONE
     }
 
     private fun parseManeuverUpdate(data: ByteArray): BydHudRouteChange {
@@ -201,7 +179,7 @@ internal class BydHudRouteState(
             }
         }
         if (index != null && type != null) maneuvers[index!!] = Maneuver(type!!, drivingSide, afterRoad)
-        return if (current() != null) BydHudRouteChange.GUIDANCE else BydHudRouteChange.NONE
+        return if (currentApple() != null) BydHudRouteChange.GUIDANCE else BydHudRouteChange.NONE
     }
 
     private inline fun forEachTlv(data: ByteArray, block: (Int, Int, Int) -> Unit) {
